@@ -1,24 +1,20 @@
 import { motion } from 'motion/react';
 import { ArrowUpRight } from 'lucide-react';
-import type { MenuCategory } from '@/src/data/menu';
 import { useCms } from '@/src/context/CmsContext';
+import { TikTokFeed } from './TikTokFeed';
 import { SmartImage } from './ui/SmartImage';
 import { SwipeSection } from './ui/SwipeSection';
 import { TornEdge } from './ui/TornEdge';
 
 interface AboutSectionProps {
   onDiscoverStory: () => void;
-  onSelectMenuCategory: (category: 'All' | MenuCategory) => void;
 }
 
 const SMOOTH_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-export function AboutSection({
-  onDiscoverStory,
-  onSelectMenuCategory,
-}: AboutSectionProps) {
+export function AboutSection({ onDiscoverStory }: AboutSectionProps) {
   const { content } = useCms();
-  const { about, aboutTiles } = content;
+  const { about, visit } = content;
 
   return (
     <section
@@ -27,39 +23,8 @@ export function AboutSection({
     >
       <SwipeSection direction="left">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-14 sm:pb-20 lg:pb-24">
-          {/* Top Row: Category Tiles Grid (Hidden on Mobile View) */}
-          <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-5 gap-5 mb-20">
-            {aboutTiles.map((tile, idx) => (
-              <motion.button
-                key={tile.id}
-                type="button"
-                onClick={() => onSelectMenuCategory(tile.category)}
-                initial={{ opacity: 0, x: -24, scale: 0.96 }}
-                whileInView={{ opacity: 1, x: 0, scale: 1 }}
-                viewport={{ once: true, amount: 0.1 }}
-                transition={{
-                  duration: 0.75,
-                  delay: idx * 0.09,
-                  ease: SMOOTH_EASE,
-                }}
-                whileHover={{ y: -4, transition: { duration: 0.3, ease: SMOOTH_EASE } }}
-                className="group flex flex-col items-center text-center cursor-pointer focus-visible:outline-2 focus-visible:outline-[#CC0000] rounded-2xl"
-              >
-                <div className="w-full aspect-square rounded-2xl overflow-hidden bg-white border border-black/8 mb-2.5 sm:mb-3">
-                  <SmartImage
-                    src={tile.image}
-                    alt={tile.title}
-                    fallbackTitle={tile.title}
-                    containerClassName="w-full h-full"
-                    className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                  />
-                </div>
-                <span className="font-display text-sm sm:text-base font-bold tracking-wide text-[#1A1A1A] group-hover:text-[#CC0000] transition-colors duration-300">
-                  {tile.title}
-                </span>
-              </motion.button>
-            ))}
-          </div>
+          {/* Top Row: Live TikTok Video Carousel (@suhe_erna) */}
+          <TikTokFeed tiktokUrl={visit.tiktokUrl} />
 
           {/* Centerpiece Kinetic Manifesto with Inline Pop-In Photo Capsules */}
           <div className="max-w-5xl mx-auto text-center">

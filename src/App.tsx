@@ -51,10 +51,7 @@ function LandingPageShell() {
         <HeroSection />
 
         {/* Section 03: About Rassa */}
-        <AboutSection
-          onDiscoverStory={() => setIsStoryOpen(true)}
-          onSelectMenuCategory={(category) => handleScrollToMenu(category)}
-        />
+        <AboutSection onDiscoverStory={() => setIsStoryOpen(true)} />
 
         {/* Section 04: Signature Menu */}
         <MenuSection
