@@ -74,13 +74,17 @@ export function TikTokFeed({ tiktokUrl }: TikTokFeedProps) {
       const qs = new URLSearchParams({ username });
       if (forceRefresh) qs.set('refresh', '1');
       const res = await fetch(`/api/tiktok/feed?${qs.toString()}`);
-      if (!res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (!res.ok || !contentType.includes('application/json')) {
         throw new Error(`HTTP ${res.status}`);
       }
       const data = (await res.json()) as TikTokFeedPayload;
+      if (!Array.isArray(data?.videos) || data.videos.length === 0) {
+        throw new Error('Empty TikTok feed');
+      }
       setFeed(data);
     } catch {
-      setError('Gagal memuat video TikTok. Silakan coba lagi.');
+      setError('fallback-embed');
     } finally {
       setIsLoading(false);
     }
@@ -181,33 +185,26 @@ export function TikTokFeed({ tiktokUrl }: TikTokFeedProps) {
         </div>
       )}
 
-      {/* Error State */}
+      {/* Fallback Official TikTok Creator Embed (for static-only hosts without /api backend) */}
       {!isLoading && error && (
-        <div className="rounded-2xl bg-white border border-black/10 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <div>
-            <p className="font-display text-base sm:text-lg font-extrabold text-[#1A1A1A] uppercase">
-              Video TikTok @{username} Belum Dapat Dimuat
-            </p>
-            <p className="text-xs sm:text-sm text-[#666666] mt-1">{error}</p>
-          </div>
-          <div className="flex items-center gap-2.5 shrink-0">
+        <div className="rounded-2xl bg-white border border-black/8 overflow-hidden">
+          <iframe
+            src={`https://www.tiktok.com/embed/@${encodeURIComponent(username)}`}
+            title={`Video TikTok @${username}`}
+            className="w-full h-[480px] sm:h-[520px] border-0 bg-white"
+            loading="lazy"
+            allow="encrypted-media;"
+          />
+          <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-[#FAFAFA] border-t border-black/6 text-xs text-[#666666]">
+            <span>Menampilkan feed langsung dari TikTok @{username}</span>
             <button
               type="button"
               onClick={() => loadFeed(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 min-h-[40px] rounded-full bg-[#CC0000] hover:bg-[#A80000] text-white text-xs font-bold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 font-bold text-[#CC0000] hover:text-[#A80000] cursor-pointer whitespace-nowrap"
             >
-              <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
-              <span>Coba Lagi</span>
+              <RefreshCw className="w-3 h-3" aria-hidden="true" />
+              <span>Muat Ulang</span>
             </button>
-            <a
-              href={profileHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 min-h-[40px] rounded-full bg-[#F5F5F5] hover:bg-[#EBEBEB] text-[#1A1A1A] text-xs font-bold transition-colors whitespace-nowrap"
-            >
-              <span>Buka TikTok</span>
-              <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
-            </a>
           </div>
         </div>
       )}
