@@ -1,0 +1,406 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net (Default-Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Global Helpers ---
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isBootstrappedAdmin() {
+      return isVerifiedUser() && request.auth.token.email == 'gibranmikail.work@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdmin() || (isVerifiedUser() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    function isOptionalString(data, key, maxLen) {
+      return !(key in data) || (data[key] is string && data[key].size() <= maxLen);
+    }
+
+    // --- Validation Blueprints ---
+    function isValidCmsSection(data) {
+      return data.keys().hasAll([
+        'sectionId',
+        'isPublic',
+        'eyebrow',
+        'title',
+        'subtitle',
+        'description',
+        'updatedBy',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'sectionId',
+        'isPublic',
+        'eyebrow',
+        'title',
+        'subtitle',
+        'description',
+        'primaryCtaLabel',
+        'secondaryCtaLabel',
+        'primaryImage',
+        'secondaryImage',
+        'tertiaryImage',
+        'accentText',
+        'extraText',
+        'outletName',
+        'address',
+        'shortArea',
+        'hoursSummary',
+        'googleMapsUrl',
+        'googleMapsEmbedUrl',
+        'instagramHandle',
+        'instagramUrl',
+        'tiktokHandle',
+        'tiktokUrl',
+        'monThuHours',
+        'friHours',
+        'satHours',
+        'sunHours',
+        'sunClosed',
+        'copyrightYear',
+        'updatedBy',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.sectionId is string && data.sectionId.size() > 0 && data.sectionId.size() <= 40 && data.sectionId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.isPublic is bool &&
+      data.eyebrow is string && data.eyebrow.size() <= 120 &&
+      data.title is string && data.title.size() <= 300 &&
+      data.subtitle is string && data.subtitle.size() <= 500 &&
+      data.description is string && data.description.size() <= 1200 &&
+      isOptionalString(data, 'primaryCtaLabel', 80) &&
+      isOptionalString(data, 'secondaryCtaLabel', 80) &&
+      isOptionalString(data, 'primaryImage', 500) &&
+      isOptionalString(data, 'secondaryImage', 500) &&
+      isOptionalString(data, 'tertiaryImage', 500) &&
+      isOptionalString(data, 'accentText', 300) &&
+      isOptionalString(data, 'extraText', 1200) &&
+      isOptionalString(data, 'outletName', 120) &&
+      isOptionalString(data, 'address', 400) &&
+      isOptionalString(data, 'shortArea', 120) &&
+      isOptionalString(data, 'hoursSummary', 200) &&
+      isOptionalString(data, 'googleMapsUrl', 500) &&
+      isOptionalString(data, 'googleMapsEmbedUrl', 800) &&
+      isOptionalString(data, 'instagramHandle', 80) &&
+      isOptionalString(data, 'instagramUrl', 300) &&
+      isOptionalString(data, 'tiktokHandle', 80) &&
+      isOptionalString(data, 'tiktokUrl', 300) &&
+      isOptionalString(data, 'monThuHours', 80) &&
+      isOptionalString(data, 'friHours', 80) &&
+      isOptionalString(data, 'satHours', 80) &&
+      isOptionalString(data, 'sunHours', 80) &&
+      (!('sunClosed' in data) || data.sunClosed is bool) &&
+      (!('copyrightYear' in data) || (data.copyrightYear is number && data.copyrightYear >= 2000 && data.copyrightYear <= 2100)) &&
+      data.updatedBy is string && data.updatedBy.size() <= 128 && data.updatedBy == request.auth.uid &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidMenuItem(data) {
+      return data.keys().hasAll([
+        'name',
+        'category',
+        'description',
+        'priceLabel',
+        'numericPrice',
+        'image',
+        'imageAlt',
+        'featured',
+        'sortOrder',
+        'isPublic',
+        'updatedBy',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'name',
+        'category',
+        'description',
+        'priceLabel',
+        'numericPrice',
+        'image',
+        'imageAlt',
+        'featured',
+        'note',
+        'sortOrder',
+        'isPublic',
+        'updatedBy',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.name is string && data.name.size() > 0 && data.name.size() <= 120 &&
+      data.category is string && data.category.size() <= 40 && data.category in ['Coffee', 'Non-Coffee', 'Food & Snacks'] &&
+      data.description is string && data.description.size() <= 400 &&
+      data.priceLabel is string && data.priceLabel.size() <= 40 &&
+      data.numericPrice is number && data.numericPrice >= 0 && data.numericPrice <= 100000000 &&
+      data.image is string && data.image.size() <= 500 &&
+      data.imageAlt is string && data.imageAlt.size() <= 240 &&
+      data.featured is bool &&
+      isOptionalString(data, 'note', 60) &&
+      data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 10000 &&
+      data.isPublic is bool &&
+      data.updatedBy is string && data.updatedBy.size() <= 128 && data.updatedBy == request.auth.uid &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidGalleryItem(data) {
+      return data.keys().hasAll([
+        'title',
+        'category',
+        'caption',
+        'image',
+        'alt',
+        'sortOrder',
+        'isPublic',
+        'updatedBy',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'title',
+        'category',
+        'caption',
+        'image',
+        'alt',
+        'sortOrder',
+        'isPublic',
+        'updatedBy',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.title is string && data.title.size() > 0 && data.title.size() <= 120 &&
+      data.category is string && data.category.size() <= 80 &&
+      data.caption is string && data.caption.size() <= 360 &&
+      data.image is string && data.image.size() <= 500 &&
+      data.alt is string && data.alt.size() <= 240 &&
+      data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 10000 &&
+      data.isPublic is bool &&
+      data.updatedBy is string && data.updatedBy.size() <= 128 && data.updatedBy == request.auth.uid &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidFeatureItem(data) {
+      return data.keys().hasAll([
+        'group',
+        'title',
+        'description',
+        'sortOrder',
+        'isPublic',
+        'updatedBy',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'group',
+        'badgeNumber',
+        'title',
+        'description',
+        'icon',
+        'image',
+        'category',
+        'sortOrder',
+        'isPublic',
+        'updatedBy',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.group is string && data.group.size() <= 40 && data.group in ['why_rassa', 'about_tile', 'story_pillar'] &&
+      isOptionalString(data, 'badgeNumber', 16) &&
+      data.title is string && data.title.size() > 0 && data.title.size() <= 120 &&
+      data.description is string && data.description.size() <= 400 &&
+      (!('icon' in data) || (data.icon is string && data.icon.size() <= 30 && data.icon in ['coffee', 'droplets', 'layout-grid', 'sun'])) &&
+      isOptionalString(data, 'image', 500) &&
+      isOptionalString(data, 'category', 40) &&
+      data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 10000 &&
+      data.isPublic is bool &&
+      data.updatedBy is string && data.updatedBy.size() <= 128 && data.updatedBy == request.auth.uid &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidAdminUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'createdAt']) &&
+        data.keys().hasOnly(['uid', 'email', 'createdAt']) &&
+        data.uid is string && data.uid.size() > 0 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.email is string && data.email.size() > 0 && data.email.size() <= 200 &&
+        data.createdAt is timestamp;
+    }
+
+    // --- Collection Match Blocks ---
+    match /cms_sections/{sectionId} {
+      allow get: if isValidId(sectionId) && (existing().isPublic == true || isAdmin());
+      allow list: if resource.data.isPublic == true || isBootstrappedAdmin();
+      allow create: if isAdmin() &&
+        isValidId(sectionId) &&
+        isValidCmsSection(incoming()) &&
+        incoming().sectionId == sectionId &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isAdmin() &&
+        isValidId(sectionId) &&
+        isValidCmsSection(incoming()) &&
+        incoming().sectionId == existing().sectionId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'isPublic',
+          'eyebrow',
+          'title',
+          'subtitle',
+          'description',
+          'primaryCtaLabel',
+          'secondaryCtaLabel',
+          'primaryImage',
+          'secondaryImage',
+          'tertiaryImage',
+          'accentText',
+          'extraText',
+          'outletName',
+          'address',
+          'shortArea',
+          'hoursSummary',
+          'googleMapsUrl',
+          'googleMapsEmbedUrl',
+          'instagramHandle',
+          'instagramUrl',
+          'tiktokHandle',
+          'tiktokUrl',
+          'monThuHours',
+          'friHours',
+          'satHours',
+          'sunHours',
+          'sunClosed',
+          'copyrightYear',
+          'updatedBy',
+          'updatedAt'
+        ]);
+      allow delete: if isAdmin() && isValidId(sectionId);
+    }
+
+    match /menu_items/{itemId} {
+      allow get: if isValidId(itemId) && (existing().isPublic == true || isAdmin());
+      allow list: if resource.data.isPublic == true || isBootstrappedAdmin();
+      allow create: if isAdmin() &&
+        isValidId(itemId) &&
+        isValidMenuItem(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isAdmin() &&
+        isValidId(itemId) &&
+        isValidMenuItem(incoming()) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'name',
+          'category',
+          'description',
+          'priceLabel',
+          'numericPrice',
+          'image',
+          'imageAlt',
+          'featured',
+          'note',
+          'sortOrder',
+          'isPublic',
+          'updatedBy',
+          'updatedAt'
+        ]);
+      allow delete: if isAdmin() && isValidId(itemId);
+    }
+
+    match /gallery_items/{photoId} {
+      allow get: if isValidId(photoId) && (existing().isPublic == true || isAdmin());
+      allow list: if resource.data.isPublic == true || isBootstrappedAdmin();
+      allow create: if isAdmin() &&
+        isValidId(photoId) &&
+        isValidGalleryItem(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isAdmin() &&
+        isValidId(photoId) &&
+        isValidGalleryItem(incoming()) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'title',
+          'category',
+          'caption',
+          'image',
+          'alt',
+          'sortOrder',
+          'isPublic',
+          'updatedBy',
+          'updatedAt'
+        ]);
+      allow delete: if isAdmin() && isValidId(photoId);
+    }
+
+    match /feature_items/{featureId} {
+      allow get: if isValidId(featureId) && (existing().isPublic == true || isAdmin());
+      allow list: if resource.data.isPublic == true || isBootstrappedAdmin();
+      allow create: if isAdmin() &&
+        isValidId(featureId) &&
+        isValidFeatureItem(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isAdmin() &&
+        isValidId(featureId) &&
+        isValidFeatureItem(incoming()) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'group',
+          'badgeNumber',
+          'title',
+          'description',
+          'icon',
+          'image',
+          'category',
+          'sortOrder',
+          'isPublic',
+          'updatedBy',
+          'updatedAt'
+        ]);
+      allow delete: if isAdmin() && isValidId(featureId);
+    }
+
+    match /admins/{adminId} {
+      allow get: if isValidId(adminId) && (isBootstrappedAdmin() || (isVerifiedUser() && request.auth.uid == adminId));
+      allow list: if isBootstrappedAdmin();
+      allow create: if isBootstrappedAdmin() &&
+        isValidId(adminId) &&
+        isValidAdminUser(incoming()) &&
+        incoming().uid == adminId &&
+        incoming().createdAt == request.time;
+      allow update: if false;
+      allow delete: if isBootstrappedAdmin() && isValidId(adminId);
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Rassa Kopi",
+  "description": "Minimalist modern coffee shop brand website for Rassa Kopi — Good Coffee, Better Moments.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

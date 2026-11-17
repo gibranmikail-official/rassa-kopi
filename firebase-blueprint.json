@@ -1,0 +1,394 @@
+{
+  "entities": {
+    "CmsSection": {
+      "title": "CmsSection",
+      "description": "Structured content configuration for an individual landing page section.",
+      "type": "object",
+      "properties": {
+        "sectionId": {
+          "type": "string",
+          "description": "Unique identifier of the section (hero, marquee, about, menu_header, why_rassa, gallery_header, visit, final_cta, footer)",
+          "maxLength": 40,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Controls public visibility of the section configuration"
+        },
+        "eyebrow": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "subtitle": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1200
+        },
+        "primaryCtaLabel": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "secondaryCtaLabel": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "primaryImage": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "secondaryImage": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "tertiaryImage": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "accentText": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "extraText": {
+          "type": "string",
+          "maxLength": 1200
+        },
+        "outletName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "address": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "shortArea": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "hoursSummary": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "googleMapsUrl": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "googleMapsEmbedUrl": {
+          "type": "string",
+          "maxLength": 800
+        },
+        "instagramHandle": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "instagramUrl": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "tiktokHandle": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "tiktokUrl": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "monThuHours": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "friHours": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "satHours": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "sunHours": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "sunClosed": {
+          "type": "boolean"
+        },
+        "copyrightYear": {
+          "type": "number"
+        },
+        "updatedBy": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "sectionId",
+        "isPublic",
+        "eyebrow",
+        "title",
+        "subtitle",
+        "description",
+        "updatedBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "MenuItem": {
+      "title": "MenuItem",
+      "description": "A coffee, non-coffee, or pastry item displayed in Signature Menu and Full Menu.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "category": {
+          "type": "string",
+          "enum": ["Coffee", "Non-Coffee", "Food & Snacks"],
+          "maxLength": 40
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "priceLabel": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "numericPrice": {
+          "type": "number"
+        },
+        "image": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "imageAlt": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "featured": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "sortOrder": {
+          "type": "number"
+        },
+        "isPublic": {
+          "type": "boolean"
+        },
+        "updatedBy": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "name",
+        "category",
+        "description",
+        "priceLabel",
+        "numericPrice",
+        "image",
+        "imageAlt",
+        "featured",
+        "sortOrder",
+        "isPublic",
+        "updatedBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "GalleryItem": {
+      "title": "GalleryItem",
+      "description": "A curated photograph card shown in the Gallery section and lightbox.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "caption": {
+          "type": "string",
+          "maxLength": 360
+        },
+        "image": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "alt": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "sortOrder": {
+          "type": "number"
+        },
+        "isPublic": {
+          "type": "boolean"
+        },
+        "updatedBy": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "title",
+        "category",
+        "caption",
+        "image",
+        "alt",
+        "sortOrder",
+        "isPublic",
+        "updatedBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "FeatureItem": {
+      "title": "FeatureItem",
+      "description": "An item belonging to Why Choose Rassa pillars, About preview tiles, or Story modal pillars.",
+      "type": "object",
+      "properties": {
+        "group": {
+          "type": "string",
+          "enum": ["why_rassa", "about_tile", "story_pillar"],
+          "maxLength": 40
+        },
+        "badgeNumber": {
+          "type": "string",
+          "maxLength": 16
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "icon": {
+          "type": "string",
+          "enum": ["coffee", "droplets", "layout-grid", "sun"],
+          "maxLength": 30
+        },
+        "image": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "sortOrder": {
+          "type": "number"
+        },
+        "isPublic": {
+          "type": "boolean"
+        },
+        "updatedBy": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "group",
+        "title",
+        "description",
+        "sortOrder",
+        "isPublic",
+        "updatedBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Authorized CMS administrator profile document keyed by UID.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/cms_sections/{sectionId}": {
+      "schema": { "$ref": "#/entities/CmsSection" },
+      "description": "Publicly readable, admin-writable section content configuration documents."
+    },
+    "/menu_items/{itemId}": {
+      "schema": { "$ref": "#/entities/MenuItem" },
+      "description": "Publicly readable, admin-writable menu items."
+    },
+    "/gallery_items/{photoId}": {
+      "schema": { "$ref": "#/entities/GalleryItem" },
+      "description": "Publicly readable, admin-writable gallery items."
+    },
+    "/feature_items/{featureId}": {
+      "schema": { "$ref": "#/entities/FeatureItem" },
+      "description": "Publicly readable, admin-writable feature items and category preview tiles."
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Private admin allowlist records."
+    }
+  }
+}
