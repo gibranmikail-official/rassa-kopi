@@ -1,6 +1,7 @@
 import { createEphemeralAuthClient, supabase } from './supabase';
 import { DEFAULT_CMS_STATE } from '@/src/data/cmsDefaults';
 import type { FeatureIconName } from '@/src/data/features';
+import type { GalleryAlbumPhoto } from '@/src/data/gallery';
 import type { MenuCategory } from '@/src/data/menu';
 import type {
   AboutContent,
@@ -45,6 +46,8 @@ export function normalizeMenuCategory(raw: unknown): MenuCategory {
   return 'Coffee';
 }
 
+const DEFAULT_FALLBACK_IMAGE = '/assets/brand/default-image.png';
+
 const LEGACY_ASSET_MAP: Record<string, string> = {
   '/assets/aistudio/rk-merah_3eab846b.png': '/assets/brand/rassa-logo.png',
   '/assets/aistudio/ripped-paper_26126c62.png': '/assets/brand/torn-edge-paper.png',
@@ -53,35 +56,42 @@ const LEGACY_ASSET_MAP: Record<string, string> = {
   '/src/assets/images/about_barista_craft_1794809733562.jpg': '/assets/about/barista-craft.jpg',
   '/src/assets/images/splash_cup_crimson_1794811142519.jpg': '/assets/why-rassa/crimson-splash-cup.png',
   '/assets/why-rassa/crimson-splash-cup.jpg': '/assets/why-rassa/crimson-splash-cup.png',
-  '/src/assets/images/gallery_cafe_interior_1794809736966.jpg': '/assets/gallery/cafe-interior.jpg',
-  '/src/assets/images/gallery_espresso_pull_1794809737051.jpg': '/assets/gallery/espresso-pull.jpg',
-  '/src/assets/images/hero_signature_coffee_clean_1794809753444.jpg': '/assets/gallery/signature-iced-latte.jpg',
-  '/src/assets/images/gallery_customer_moment_1794809738132.jpg': '/assets/gallery/customer-moment.jpg',
-  '/src/assets/images/gallery_pour_over_brew_1794809756125.jpg': '/assets/gallery/pour-over-brew.jpg',
-  '/src/assets/images/menu_seasalt_caramel_1794833008589.jpg': '/assets/menu/sea-salt-caramel.jpg',
-  '/src/assets/images/menu_kopi_pandan_1794833008458.jpg': '/assets/menu/kopi-susu-pandan.jpg',
-  '/src/assets/images/menu_choco_pistachio_1794833008339.jpg': '/assets/menu/choco-pistachio.jpg',
-  '/src/assets/images/menu_matcha_strawberry_1794833008223.jpg': '/assets/menu/matcha-strawberry.jpg',
-  '/src/assets/images/menu_black_series_1794833009483.jpg': '/assets/menu/black-series.jpg',
-  '/src/assets/images/menu_rassa_latte_1794809733695.jpg': '/assets/menu/rassa-latte.jpg',
-  '/src/assets/images/menu_iced_americano_1794809733630.jpg': '/assets/menu/iced-americano.jpg',
-  '/src/assets/images/menu_hot_cappuccino_1794809735003.jpg': '/assets/menu/hot-cappuccino.jpg',
-  '/src/assets/images/menu_iced_matcha_clean_1794809755426.jpg': '/assets/menu/iced-matcha.jpg',
-  '/src/assets/images/menu_peach_tea_1794833006974.jpg': '/assets/menu/peach-mango-tea.jpg',
-  '/src/assets/images/menu_lychee_honey_lemon_1794833006804.jpg': '/assets/menu/lychee-honey-lemon.jpg',
-  '/src/assets/images/menu_yakult_fusion_1794833007419.jpg': '/assets/menu/yakult-fusion.jpg',
-  '/src/assets/images/menu_indomie_komplit_1794833009915.jpg': '/assets/menu/indomie-komplit.jpg',
-  '/src/assets/images/menu_cireng_pedas_1794833011765.jpg': '/assets/menu/cireng-ayam-pedas.jpg',
-  '/src/assets/images/menu_french_fries_platter_1794833011081.jpg': '/assets/menu/french-fries-platter.jpg',
-  '/src/assets/images/menu_singkong_keju_1794833013196.jpg': '/assets/menu/singkong-keju.jpg',
-  '/src/assets/images/menu_pain_suisse_brownies_1794833013725.jpg': '/assets/menu/pain-suisse-brownies.jpg',
-  '/src/assets/images/menu_butter_croissant_1794809735671.jpg': '/assets/menu/butter-croissant.jpg',
+  '/src/assets/images/gallery_cafe_interior_1794809736966.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/gallery_espresso_pull_1794809737051.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/hero_signature_coffee_clean_1794809753444.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/gallery_customer_moment_1794809738132.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/gallery_pour_over_brew_1794809756125.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_seasalt_caramel_1794833008589.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_kopi_pandan_1794833008458.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_choco_pistachio_1794833008339.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_matcha_strawberry_1794833008223.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_black_series_1794833009483.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_rassa_latte_1794809733695.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_iced_americano_1794809733630.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_hot_cappuccino_1794809735003.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_iced_matcha_clean_1794809755426.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_peach_tea_1794833006974.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_lychee_honey_lemon_1794833006804.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_yakult_fusion_1794833007419.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_indomie_komplit_1794833009915.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_cireng_pedas_1794833011765.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_french_fries_platter_1794833011081.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_singkong_keju_1794833013196.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_pain_suisse_brownies_1794833013725.jpg': DEFAULT_FALLBACK_IMAGE,
+  '/src/assets/images/menu_butter_croissant_1794809735671.jpg': DEFAULT_FALLBACK_IMAGE,
 };
 
 export function normalizeAssetUrl(raw: unknown, fallback = ''): string {
   if (typeof raw !== 'string' || !raw.trim()) return fallback;
   const trimmed = raw.trim();
-  return LEGACY_ASSET_MAP[trimmed] ?? trimmed;
+  const mapped = LEGACY_ASSET_MAP[trimmed] ?? trimmed;
+  if (
+    mapped.startsWith('/assets/gallery/') ||
+    mapped.startsWith('/assets/menu/')
+  ) {
+    return DEFAULT_FALLBACK_IMAGE;
+  }
+  return mapped;
 }
 
 export function sanitizeId(raw: string): string {
@@ -112,6 +122,99 @@ async function getCurrentUidOrThrow(): Promise<string> {
     throw new Error('Autentikasi diperlukan sebelum menyimpan perubahan CMS.');
   }
   return data.user.id;
+}
+
+export const CMS_STORAGE_BUCKET = 'rassakopi-assets';
+const STORAGE_PUBLIC_MARKER = `/storage/v1/object/public/${CMS_STORAGE_BUCKET}/`;
+
+export function extractStorageObjectPath(rawUrl: unknown): string | null {
+  if (typeof rawUrl !== 'string') return null;
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return null;
+  const markerIdx = trimmed.indexOf(STORAGE_PUBLIC_MARKER);
+  if (markerIdx === -1) return null;
+  if (
+    !trimmed.startsWith('http://') &&
+    !trimmed.startsWith('https://') &&
+    !trimmed.startsWith('/')
+  ) {
+    return null;
+  }
+  const afterMarker = trimmed.slice(markerIdx + STORAGE_PUBLIC_MARKER.length);
+  const cleanPath = afterMarker.split(/[?#]/)[0]?.trim() ?? '';
+  if (!cleanPath) return null;
+  try {
+    return decodeURIComponent(cleanPath);
+  } catch {
+    return cleanPath;
+  }
+}
+
+function collectStoragePathsFromValue(value: unknown, out: Set<string>): void {
+  if (typeof value === 'string') {
+    const objectPath = extractStorageObjectPath(value);
+    if (objectPath) out.add(objectPath);
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      collectStoragePathsFromValue(item, out);
+    }
+    return;
+  }
+  if (value && typeof value === 'object') {
+    for (const val of Object.values(value as Record<string, unknown>)) {
+      collectStoragePathsFromValue(val, out);
+    }
+  }
+}
+
+export async function deleteUnreferencedStorageAssets(
+  candidateUrls: Array<string | null | undefined>
+): Promise<void> {
+  const candidatePaths = new Set<string>();
+  for (const url of candidateUrls) {
+    const path = extractStorageObjectPath(url);
+    if (path) candidatePaths.add(path);
+  }
+  if (candidatePaths.size === 0) return;
+
+  const [sectionsRes, menuRes, galleryRes, featuresRes] = await Promise.all([
+    supabase.from('cms_sections').select('payload'),
+    supabase.from('menu_items').select('image'),
+    supabase.from('gallery_items').select('image'),
+    supabase.from('feature_items').select('image'),
+  ]);
+
+  if (
+    sectionsRes.error ||
+    menuRes.error ||
+    galleryRes.error ||
+    featuresRes.error
+  ) {
+    return;
+  }
+
+  const stillReferenced = new Set<string>();
+  collectStoragePathsFromValue(sectionsRes.data, stillReferenced);
+  collectStoragePathsFromValue(menuRes.data, stillReferenced);
+  collectStoragePathsFromValue(galleryRes.data, stillReferenced);
+  collectStoragePathsFromValue(featuresRes.data, stillReferenced);
+
+  const pathsToDelete = Array.from(candidatePaths).filter(
+    (path) => !stillReferenced.has(path)
+  );
+  if (pathsToDelete.length === 0) return;
+
+  for (let i = 0; i < pathsToDelete.length; i += 50) {
+    const chunk = pathsToDelete.slice(i, i + 50);
+    const { error } = await supabase.storage
+      .from(CMS_STORAGE_BUCKET)
+      .remove(chunk);
+    if (error) {
+      console.warn('[CMS Storage] Failed to remove unused assets:', error.message);
+    }
+  }
 }
 
 export function sectionPayloadToPartialState(
@@ -301,15 +404,20 @@ export async function fetchAllCmsData(): Promise<CmsFetchResult> {
   }
 
   let nextState: CmsSiteState = { ...DEFAULT_CMS_STATE };
+  let galleryAlbumsMap: Record<string, GalleryAlbumPhoto[]> = {};
 
   if (sectionsRes.data) {
     const sectionUpdates: Partial<CmsSiteState> = {};
     for (const row of sectionsRes.data) {
-      const sectionId = row.section_id as CmsSectionId;
       const payload =
         row.payload && typeof row.payload === 'object'
           ? (row.payload as Record<string, unknown>)
           : {};
+      if (row.section_id === 'gallery_albums') {
+        galleryAlbumsMap = parseGalleryAlbumsPayload(payload);
+        continue;
+      }
+      const sectionId = row.section_id as CmsSectionId;
       Object.assign(sectionUpdates, sectionPayloadToPartialState(sectionId, payload));
     }
     nextState = { ...nextState, ...sectionUpdates };
@@ -352,7 +460,13 @@ export async function fetchAllCmsData(): Promise<CmsFetchResult> {
       caption: d.caption ?? '',
       image: normalizeAssetUrl(d.image),
       alt: d.alt ?? d.title ?? '',
+      photos: galleryAlbumsMap[d.id],
       sortOrder: typeof d.sort_order === 'number' ? d.sort_order : 0,
+    }));
+  } else if (Object.keys(galleryAlbumsMap).length > 0) {
+    nextState.galleryItems = nextState.galleryItems.map((item) => ({
+      ...item,
+      photos: galleryAlbumsMap[item.id] ?? item.photos,
     }));
   }
 
@@ -401,6 +515,12 @@ export async function saveCmsSection(
     | FooterContent
 ): Promise<void> {
   const uid = await getCurrentUidOrThrow();
+  const { data: existingSection } = await supabase
+    .from('cms_sections')
+    .select('payload')
+    .eq('section_id', sectionId)
+    .maybeSingle();
+
   const { error } = await supabase.from('cms_sections').upsert(
     {
       section_id: sectionId,
@@ -412,6 +532,16 @@ export async function saveCmsSection(
     { onConflict: 'section_id' }
   );
   if (error) throw new Error(error.message);
+
+  if (existingSection?.payload) {
+    const oldPaths = new Set<string>();
+    collectStoragePathsFromValue(existingSection.payload, oldPaths);
+    if (oldPaths.size > 0) {
+      const oldUrls: string[] = [];
+      oldPaths.forEach((p) => oldUrls.push(`${STORAGE_PUBLIC_MARKER}${p}`));
+      await deleteUnreferencedStorageAssets(oldUrls);
+    }
+  }
 }
 
 function mapMenuItemToRow(item: CmsMenuItem, uid: string) {
@@ -441,19 +571,115 @@ function mapMenuItemToRow(item: CmsMenuItem, uid: string) {
   };
 }
 
+function formatMenuWriteError(message: string): Error {
+  if (message.includes('menu_items_category_check')) {
+    return new Error(
+      'Constraint kategori tabel "menu_items" di Supabase masih versi lama. Jalankan SQL pembaruan menu_items_category_check di Supabase SQL Editor.'
+    );
+  }
+  return new Error(message);
+}
+
 export async function saveMenuItem(item: CmsMenuItem): Promise<void> {
   const uid = await getCurrentUidOrThrow();
   const row = mapMenuItemToRow(item, uid);
+  const { data: existingRow } = await supabase
+    .from('menu_items')
+    .select('image')
+    .eq('id', row.id)
+    .maybeSingle();
+
   const { error } = await supabase
     .from('menu_items')
     .upsert(row, { onConflict: 'id' });
-  if (error) throw new Error(error.message);
+  if (error) throw formatMenuWriteError(error.message);
+
+  if (existingRow?.image && existingRow.image !== row.image) {
+    await deleteUnreferencedStorageAssets([existingRow.image]);
+  }
 }
 
 export async function deleteMenuItem(itemId: string): Promise<void> {
   await getCurrentUidOrThrow();
   const id = sanitizeId(itemId);
+  const { data: existingRow } = await supabase
+    .from('menu_items')
+    .select('image')
+    .eq('id', id)
+    .maybeSingle();
+
   const { error } = await supabase.from('menu_items').delete().eq('id', id);
+  if (error) throw new Error(error.message);
+
+  if (existingRow?.image) {
+    await deleteUnreferencedStorageAssets([existingRow.image]);
+  }
+}
+
+const GALLERY_ALBUMS_SECTION_ID = 'gallery_albums';
+
+function normalizeAlbumPhotosList(rawList: unknown): GalleryAlbumPhoto[] {
+  if (!Array.isArray(rawList)) return [];
+  const result: GalleryAlbumPhoto[] = [];
+  for (let i = 0; i < rawList.length; i++) {
+    const entry = rawList[i];
+    if (!entry || typeof entry !== 'object') continue;
+    const obj = entry as Record<string, unknown>;
+    const image = normalizeAssetUrl(obj.image);
+    const title = clampStr(obj.title ?? '', 120);
+    const caption = clampStr(obj.caption ?? '', 360);
+    const alt = clampStr(obj.alt ?? title, 240);
+    const id = sanitizeId(
+      typeof obj.id === 'string' && obj.id ? obj.id : `photo-${i + 1}`
+    );
+    result.push({ id, image, title, caption, alt });
+  }
+  return result;
+}
+
+function parseGalleryAlbumsPayload(
+  payload: Record<string, unknown>
+): Record<string, GalleryAlbumPhoto[]> {
+  const rawAlbums = payload.albums;
+  if (!rawAlbums || typeof rawAlbums !== 'object') return {};
+  const map: Record<string, GalleryAlbumPhoto[]> = {};
+  for (const [albumId, rawList] of Object.entries(
+    rawAlbums as Record<string, unknown>
+  )) {
+    const list = normalizeAlbumPhotosList(rawList);
+    if (list.length > 0) {
+      map[albumId] = list;
+    }
+  }
+  return map;
+}
+
+async function fetchCurrentGalleryAlbumsMap(): Promise<
+  Record<string, GalleryAlbumPhoto[]>
+> {
+  const { data } = await supabase
+    .from('cms_sections')
+    .select('payload')
+    .eq('section_id', GALLERY_ALBUMS_SECTION_ID)
+    .maybeSingle();
+  if (!data?.payload || typeof data.payload !== 'object') return {};
+  return parseGalleryAlbumsPayload(data.payload as Record<string, unknown>);
+}
+
+async function upsertGalleryAlbumsMap(
+  albums: Record<string, GalleryAlbumPhoto[]>,
+  uid: string
+): Promise<void> {
+  const { error } = await supabase.from('cms_sections').upsert(
+    {
+      section_id: GALLERY_ALBUMS_SECTION_ID,
+      payload: { albums },
+      is_public: true,
+      updated_by: uid,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'section_id' }
+  );
   if (error) throw new Error(error.message);
 }
 
@@ -462,12 +688,14 @@ function mapGalleryItemToRow(photo: CmsGalleryItem, uid: string) {
     0,
     Math.min(10000, Number.isFinite(photo.sortOrder) ? Math.round(photo.sortOrder) : 0)
   );
+  const coverImage =
+    photo.image?.trim() || photo.photos?.[0]?.image?.trim() || '';
   return {
     id: sanitizeId(photo.id || photo.title),
     title: clampStr(photo.title || 'Untitled Photo', 120),
     category: clampStr(photo.category || 'Coffee Moment', 80),
     caption: clampStr(photo.caption, 360),
-    image: clampStr(photo.image, 1000),
+    image: clampStr(coverImage, 1000),
     alt: clampStr(photo.alt || photo.title, 240),
     sort_order: sortOrder,
     is_public: true,
@@ -479,16 +707,76 @@ function mapGalleryItemToRow(photo: CmsGalleryItem, uid: string) {
 export async function saveGalleryItem(photo: CmsGalleryItem): Promise<void> {
   const uid = await getCurrentUidOrThrow();
   const row = mapGalleryItemToRow(photo, uid);
+
+  const [{ data: existingRow }, currentMap] = await Promise.all([
+    supabase.from('gallery_items').select('image').eq('id', row.id).maybeSingle(),
+    fetchCurrentGalleryAlbumsMap(),
+  ]);
+  const previousUrls: Array<string | null | undefined> = [
+    existingRow?.image,
+    ...(currentMap[row.id] ?? []).map((p) => p.image),
+  ];
+
   const { error } = await supabase
     .from('gallery_items')
     .upsert(row, { onConflict: 'id' });
   if (error) throw new Error(error.message);
+
+  const cleanPhotos = (photo.photos ?? [])
+    .filter((p) => Boolean(p.image?.trim()) || Boolean(p.title?.trim()))
+    .map((p, idx) => ({
+      id: sanitizeId(p.id || `${row.id}-photo-${idx + 1}`),
+      image: clampStr(p.image?.trim() || row.image, 1000),
+      title: clampStr(p.title ?? '', 120),
+      caption: clampStr(p.caption ?? '', 360),
+      alt: clampStr(p.alt || p.title || row.title, 240),
+    }));
+
+  if (cleanPhotos.length > 0) {
+    currentMap[row.id] = cleanPhotos;
+  } else {
+    delete currentMap[row.id];
+  }
+  await upsertGalleryAlbumsMap(currentMap, uid);
+
+  await deleteUnreferencedStorageAssets(previousUrls);
 }
 
 export async function deleteGalleryItem(photoId: string): Promise<void> {
-  await getCurrentUidOrThrow();
+  const uid = await getCurrentUidOrThrow();
   const id = sanitizeId(photoId);
+
+  const [{ data: existingRow }, currentMap] = await Promise.all([
+    supabase.from('gallery_items').select('image').eq('id', id).maybeSingle(),
+    fetchCurrentGalleryAlbumsMap(),
+  ]);
+  const candidateUrls: Array<string | null | undefined> = [
+    existingRow?.image,
+    ...(currentMap[id] ?? []).map((p) => p.image),
+  ];
+
   const { error } = await supabase.from('gallery_items').delete().eq('id', id);
+  if (error) throw new Error(error.message);
+
+  if (id in currentMap) {
+    delete currentMap[id];
+    await upsertGalleryAlbumsMap(currentMap, uid);
+  }
+
+  await deleteUnreferencedStorageAssets(candidateUrls);
+}
+
+export async function saveGalleryItemsOrder(
+  items: CmsGalleryItem[]
+): Promise<void> {
+  const uid = await getCurrentUidOrThrow();
+  const rows = items.map((photo, index) =>
+    mapGalleryItemToRow({ ...photo, sortOrder: index }, uid)
+  );
+  if (rows.length === 0) return;
+  const { error } = await supabase
+    .from('gallery_items')
+    .upsert(rows, { onConflict: 'id' });
   if (error) throw new Error(error.message);
 }
 
@@ -522,17 +810,25 @@ export async function saveFeatureItem(item: CmsFeatureItem): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
-export async function seedMenuItemsDefaults(): Promise<void> {
+export async function seedMenuItemsDefaults(excludeId?: string): Promise<void> {
   const uid = await getCurrentUidOrThrow();
-  const rows = DEFAULT_CMS_STATE.menuItems.map((item) => mapMenuItemToRow(item, uid));
+  const cleanExclude = excludeId ? sanitizeId(excludeId) : null;
+  const rows = DEFAULT_CMS_STATE.menuItems
+    .filter((item) => !cleanExclude || sanitizeId(item.id || item.name) !== cleanExclude)
+    .map((item) => mapMenuItemToRow(item, uid));
+  if (rows.length === 0) return;
   const { error } = await supabase
     .from('menu_items')
     .upsert(rows, { onConflict: 'id' });
-  if (error) throw new Error(error.message);
+  if (error) throw formatMenuWriteError(error.message);
 }
 
 export async function replaceMenuItemsWithOfficialDefaults(): Promise<void> {
   const uid = await getCurrentUidOrThrow();
+  const { data: existingRows } = await supabase
+    .from('menu_items')
+    .select('image');
+
   const { error: delError } = await supabase
     .from('menu_items')
     .delete()
@@ -543,7 +839,11 @@ export async function replaceMenuItemsWithOfficialDefaults(): Promise<void> {
   const { error } = await supabase
     .from('menu_items')
     .upsert(rows, { onConflict: 'id' });
-  if (error) throw new Error(error.message);
+  if (error) throw formatMenuWriteError(error.message);
+
+  if (existingRows && existingRows.length > 0) {
+    await deleteUnreferencedStorageAssets(existingRows.map((r) => r.image));
+  }
 }
 
 export async function seedGalleryItemsDefaults(): Promise<void> {
@@ -695,7 +995,6 @@ export async function deleteAdminAccountRecord(accountId: string): Promise<void>
 // Supabase Storage Upload (JPEG, JPG, PNG, SVG, WebP)
 // =============================================================================
 
-export const CMS_STORAGE_BUCKET = 'rassakopi-assets';
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB
 
 const EXT_TO_MIME: Record<string, string> = {

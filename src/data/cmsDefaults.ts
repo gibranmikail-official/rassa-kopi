@@ -4,42 +4,6 @@ import { GALLERY_ITEMS } from '@/src/data/gallery';
 import { MENU_ITEMS } from '@/src/data/menu';
 import type { CmsFeatureItem, CmsSiteState } from '@/src/types/cms';
 
-export interface PresetAsset {
-  label: string;
-  url: string;
-}
-
-export const PRESET_ASSETS: PresetAsset[] = [
-  { label: 'Rassa Logo (Red)', url: '/assets/brand/rassa-logo.png' },
-  { label: 'Hero Splash (Coffee Splash)', url: '/assets/hero/hero-coffee-splash.png' },
-  { label: 'Hero Iced Coffee Cup', url: '/assets/hero/hero-iced-cup.png' },
-  { label: 'Coffee Bar & Craft (About)', url: '/assets/about/barista-craft.jpg' },
-  { label: 'Crimson Splash Cup (Why Rassa)', url: '/assets/why-rassa/crimson-splash-cup.png' },
-  { label: 'Cafe Minimalist Interior', url: '/assets/gallery/cafe-interior.jpg' },
-  { label: 'Espresso Pull', url: '/assets/gallery/espresso-pull.jpg' },
-  { label: 'Signature Iced Latte', url: '/assets/gallery/signature-iced-latte.jpg' },
-  { label: 'Customer Moment', url: '/assets/gallery/customer-moment.jpg' },
-  { label: 'Pour-Over Craft', url: '/assets/gallery/pour-over-brew.jpg' },
-  { label: 'Sea Salt Caramel', url: '/assets/menu/sea-salt-caramel.jpg' },
-  { label: 'Kopi Susu Pandan', url: '/assets/menu/kopi-susu-pandan.jpg' },
-  { label: 'Rassa Signature Latte', url: '/assets/menu/rassa-latte.jpg' },
-  { label: 'Iced Black Americano', url: '/assets/menu/iced-americano.jpg' },
-  { label: 'Hot Cappuccino', url: '/assets/menu/hot-cappuccino.jpg' },
-  { label: 'Ceremonial Iced Matcha', url: '/assets/menu/iced-matcha.jpg' },
-  { label: 'Choco Pistachio', url: '/assets/menu/choco-pistachio.jpg' },
-  { label: 'Matcha Strawberry', url: '/assets/menu/matcha-strawberry.jpg' },
-  { label: 'Black Series Citrus', url: '/assets/menu/black-series.jpg' },
-  { label: 'Peach / Mango Tea', url: '/assets/menu/peach-mango-tea.jpg' },
-  { label: 'Lychee & Honey Lemon', url: '/assets/menu/lychee-honey-lemon.jpg' },
-  { label: 'Yakult Berry Fusion', url: '/assets/menu/yakult-fusion.jpg' },
-  { label: 'Indomie Komplit', url: '/assets/menu/indomie-komplit.jpg' },
-  { label: 'Cireng Ayam Pedas', url: '/assets/menu/cireng-ayam-pedas.jpg' },
-  { label: 'French Fries & Platter', url: '/assets/menu/french-fries-platter.jpg' },
-  { label: 'Singkong Keju', url: '/assets/menu/singkong-keju.jpg' },
-  { label: 'Pain Suisse & Brownies', url: '/assets/menu/pain-suisse-brownies.jpg' },
-  { label: 'Butter Croissant', url: '/assets/menu/butter-croissant.jpg' },
-];
-
 export const DEFAULT_ABOUT_TILES: CmsFeatureItem[] = [
   {
     id: 'about-tile-coffee',
@@ -48,7 +12,7 @@ export const DEFAULT_ABOUT_TILES: CmsFeatureItem[] = [
     title: 'KOPI FAVORIT',
     description: 'Sea Salt Caramel, Kopi Susu Butterscotch, dan racikan espresso pilihan.',
     icon: 'coffee',
-    image: '/assets/menu/sea-salt-caramel.jpg',
+    image: '/assets/brand/default-image.png',
     category: 'Coffee',
     sortOrder: 0,
   },
@@ -59,7 +23,7 @@ export const DEFAULT_ABOUT_TILES: CmsFeatureItem[] = [
     title: 'NON COFFEE',
     description: 'Matcha Strawberry, Choco Pistachio, dan teh buah yang menyegarkan.',
     icon: 'droplets',
-    image: '/assets/menu/matcha-strawberry.jpg',
+    image: '/assets/brand/default-image.png',
     category: 'Non Coffee',
     sortOrder: 1,
   },
@@ -70,7 +34,7 @@ export const DEFAULT_ABOUT_TILES: CmsFeatureItem[] = [
     title: 'BLACK SERIES',
     description: 'Perpaduan kopi hitam dingin dengan buah lemon, orange, peach, dan leci.',
     icon: 'coffee',
-    image: '/assets/menu/black-series.jpg',
+    image: '/assets/brand/default-image.png',
     category: 'Black Series',
     sortOrder: 2,
   },
@@ -81,7 +45,7 @@ export const DEFAULT_ABOUT_TILES: CmsFeatureItem[] = [
     title: 'MAKANAN & CEMILAN',
     description: 'Indomie Komplit hangat, Cireng Ayam Pedas, hingga Snack Platter.',
     icon: 'sun',
-    image: '/assets/menu/indomie-komplit.jpg',
+    image: '/assets/brand/default-image.png',
     category: 'Makanan',
     sortOrder: 3,
   },
@@ -92,7 +56,7 @@ export const DEFAULT_ABOUT_TILES: CmsFeatureItem[] = [
     title: 'ANEKA ROTI',
     description: 'Pain Suisse, Brownies, Danish Cheese, dan Croissant Cheese panggang segar.',
     icon: 'sun',
-    image: '/assets/menu/pain-suisse-brownies.jpg',
+    image: '/assets/brand/default-image.png',
     category: 'Aneka Roti',
     sortOrder: 4,
   },
@@ -158,8 +122,8 @@ export const DEFAULT_CMS_STATE: CmsSiteState = {
     headlinePart3: 'QUALITY & MEANINGFUL',
     headlinePart4: 'MOMENTS.',
     pillImage1: '/assets/about/barista-craft.jpg',
-    pillImage2: '/assets/gallery/pour-over-brew.jpg',
-    pillImage3: '/assets/gallery/customer-moment.jpg',
+    pillImage2: '/assets/brand/default-image.png',
+    pillImage3: '/assets/brand/default-image.png',
     description:
       'At Rassa Kopi, we believe every cup has a story. We bring together coffee, quality, and meaningful moments to create an enjoyable experience for everyone.',
     ctaLabel: 'Discover Our Story',
@@ -168,7 +132,7 @@ export const DEFAULT_CMS_STATE: CmsSiteState = {
       'At Rassa Kopi, we believe every cup has a story. We bring together coffee, quality, and meaningful moments to create an enjoyable experience for everyone.',
     storyModalParagraph2:
       'Whether you are starting your morning commute, catching up with a friend, or taking a quiet pause in the afternoon, our space and recipes are crafted to make daily rituals feel effortless and welcoming.',
-    storyModalImage: '/assets/gallery/cafe-interior.jpg',
+    storyModalImage: '/assets/brand/default-image.png',
   },
   menuHeader: {
     eyebrow: 'SIGNATURE MENU',

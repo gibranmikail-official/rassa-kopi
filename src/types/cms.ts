@@ -1,4 +1,5 @@
 import type { FeatureIconName } from '@/src/data/features';
+import type { GalleryAlbumPhoto } from '@/src/data/gallery';
 import type { MenuCategory } from '@/src/data/menu';
 
 export type CmsSectionId =
@@ -48,6 +49,7 @@ export interface CmsGalleryItem {
   caption: string;
   image: string;
   alt: string;
+  photos?: GalleryAlbumPhoto[];
   sortOrder: number;
 }
 

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Coffee } from 'lucide-react';
 
+export const DEFAULT_IMAGE_URL = '/assets/brand/default-image.png';
+
 interface SmartImageProps {
   src: string;
   alt: string;
@@ -19,12 +21,17 @@ export function SmartImage({
   fallbackTitle,
 }: SmartImageProps) {
   const [hasError, setHasError] = useState(false);
+  const [defaultFailed, setDefaultFailed] = useState(false);
 
   useEffect(() => {
     setHasError(false);
+    setDefaultFailed(false);
   }, [src]);
 
-  if (hasError || !src) {
+  const trimmedSrc = src?.trim() ?? '';
+  const shouldUseDefault = !trimmedSrc || hasError;
+
+  if (shouldUseDefault && defaultFailed) {
     return (
       <div
         className={`flex flex-col items-center justify-center bg-[#F5F5F5] text-[#666666] p-6 text-center ${containerClassName}`}
@@ -41,9 +48,21 @@ export function SmartImage({
     );
   }
 
+  if (shouldUseDefault) {
+    return (
+      <img
+        src={DEFAULT_IMAGE_URL}
+        alt={alt}
+        loading={lazy ? 'lazy' : 'eager'}
+        onError={() => setDefaultFailed(true)}
+        className={className}
+      />
+    );
+  }
+
   return (
     <img
-      src={src}
+      src={trimmedSrc}
       alt={alt}
       loading={lazy ? 'lazy' : 'eager'}
       referrerPolicy="no-referrer"

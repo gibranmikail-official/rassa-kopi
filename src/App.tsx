@@ -78,10 +78,9 @@ function LandingPageShell() {
 
       {/* Interactive Overlays & Back-to-Top */}
       <GalleryLightbox
-        photos={content.galleryItems}
-        activeIndex={lightboxIndex}
+        albums={content.galleryItems}
+        activeAlbumIndex={lightboxIndex}
         onClose={() => setLightboxIndex(null)}
-        onChangeIndex={(nextIndex) => setLightboxIndex(nextIndex)}
       />
 
       <StoryModal
